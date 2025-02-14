@@ -125,11 +125,11 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     echo "$LATEST_VERSION" > "$CURRENT_VERSION_FILE"
 
     # Restart the application safely
-    if pgrep -f my_executable > /dev/null; then
+    if pgrep -f capunit > /dev/null; then
         echo "🔄 Restarting application..."
-        pkill -f my_executable
+        pkill -f capunit
     fi
-    nohup "$APP_DIR/my_executable" &
+    nohup "$APP_DIR/capunit" &
 
     echo "✅ Update applied successfully!"
 else
