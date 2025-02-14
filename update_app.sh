@@ -1,4 +1,4 @@
-echo '#!/bin/bash
+#!/bin/bash
 
 LOG_FILE="/home/pi/update_log.txt"
 exec > >(tee -a "$LOG_FILE") 2>&1  # Redirect stdout and stderr to log file
@@ -12,6 +12,12 @@ CURRENT_VERSION_FILE="$APP_DIR/version.txt"
 VERSION_URL="https://raw.githubusercontent.com/sent7400/myapp-updates/main/version.json"
 EXAMPLE_FILE="/home/pi/example.txt"
 WAYFIRE_CONFIG="/home/pi/.config/wayfire.ini"
+
+# Ensure jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "❌ Error: jq is not installed! Install it using 'sudo apt-get install jq'."
+    exit 1
+fi
 
 # Ensure the capunit directory exists
 if [ ! -d "$APP_DIR" ]; then
@@ -118,9 +124,11 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     # Update version file
     echo "$LATEST_VERSION" > "$CURRENT_VERSION_FILE"
 
-    # Restart the application
-    echo "🔄 Restarting application..."
-    pkill -f my_executable
+    # Restart the application safely
+    if pgrep -f my_executable > /dev/null; then
+        echo "🔄 Restarting application..."
+        pkill -f my_executable
+    fi
     nohup "$APP_DIR/my_executable" &
 
     echo "✅ Update applied successfully!"
@@ -130,4 +138,4 @@ fi
 
 echo "============================="
 echo "Update check finished at: $(date)"
-echo "============================="' > /home/pi/update_app.sh
+echo "============================="
