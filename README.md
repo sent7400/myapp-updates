@@ -80,7 +80,21 @@ git push origin main
 
 ## **3️⃣ Creating a Release on GitHub**
 
-### **Step 1: Create a New Release**
+### **Step 1: Package the Application for Release**
+1. **Create an empty folder and move the binary into it:**
+   ```sh
+   mkdir myapp-release
+   mv my_binary_file myapp-release/
+   ```
+
+2. **Create a compressed `.tar.gz` archive of the folder:**
+   ```sh
+   tar -czvf myapp-v1.2.0.tar.gz -C myapp-release .
+   ```
+   This command will generate `myapp-v1.2.0.tar.gz`, which will be uploaded for the new release.
+
+
+### **Step 2: Create a New Release**
 1. Go to your GitHub repository.
 2. Click **Releases** → **Create a new release**.
 3. Tag the version (e.g., `v1.0.0`).
@@ -88,7 +102,7 @@ git push origin main
 5. Upload your application binary (`myapp.tar.gz`).
 6. Click **Publish release**.
 
-### **Step 2: Update `version.json` with the New URL**
+### **Step 3: Update `version.json` with the New URL**
 Modify `version.json` with the new release URL:
 ```json
 {
