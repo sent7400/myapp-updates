@@ -131,7 +131,3 @@ fi
 echo "============================="
 echo "Update check finished at: $(date)"
 echo "============================="' > /home/pi/update_app.sh
-
-Give the script execute permissions:
-
-chmod +x /home/pi/update_app.sh
