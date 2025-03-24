@@ -21,9 +21,25 @@ WAYFIRE_CONFIG="$ROOT_HOME/.config/wayfire.ini"
 
 # Ensure jq is installed
 if ! command -v jq &> /dev/null; then
-    echo "❌ Error: jq is not installed! Install it using 'sudo apt-get install jq'."
-    exit 1
+    echo "📦 'jq' not found. Installing jq..."
+    
+    # Update package list (only if needed)
+    sudo apt-get update
+    
+    # Install jq silently
+    sudo apt-get install -y jq
+
+    # Verify installation succeeded
+    if ! command -v jq &> /dev/null; then
+        echo "❌ Error: Failed to install jq. Please install it manually."
+        exit 1
+    else
+        echo "✅ jq installed successfully."
+    fi
+else
+    echo "✅ jq is already installed."
 fi
+
 
 # Ensure the capunit directory exists
 if [ ! -d "$APP_DIR" ]; then
@@ -67,6 +83,40 @@ rule_3 = on created if app_id is "capunit" then set skip_taskbar
 rule_4 = on created if app_id is "capunit" then set always_on_top
 EOL
 fi
+
+
+# ===========================================
+# 📌 Ensure Autostart .desktop File Exists
+# ===========================================
+
+AUTOSTART_DIR="$ROOT_HOME/.config/autostart"
+DESKTOP_FILE="$AUTOSTART_DIR/capunit.desktop"
+
+echo "🔧 Setting up autostart desktop file at: $DESKTOP_FILE"
+
+# Create autostart directory if it doesn't exist
+if [ ! -d "$AUTOSTART_DIR" ]; then
+    echo "Creating autostart directory at $AUTOSTART_DIR"
+    mkdir -p "$AUTOSTART_DIR"
+fi
+
+# Create the capunit.desktop file
+cat <<EOF > "$DESKTOP_FILE"
+[Desktop Entry]
+Type=Application
+Exec=$APP_DIR/capunit
+Terminal=false
+Hidden=false
+NoDisplay=false
+Name=CapUnit App
+Comment=Auto-start CapUnit Flutter app
+EOF
+
+# Ensure the desktop file is executable
+chmod +x "$DESKTOP_FILE"
+
+echo "✅ capunit.desktop file created at: $DESKTOP_FILE"
+
 
 # Fetch latest update info
 echo "Fetching update info from: $VERSION_URL"
