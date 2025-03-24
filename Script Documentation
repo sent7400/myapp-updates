@@ -1,0 +1,84 @@
+Script Documentation: Auto Update + Autostart Setup for CapUnit Flutter App
+🧠 Purpose
+This script is designed to:
+
+Automatically check for updates of a Flutter app called CapUnit.
+Download and install new versions if available.
+Set up autostart mechanisms using both Wayfire config and XDG .desktop file.
+Log all actions to a file.
+🧾 Step-by-Step Breakdown
+🔹 1. Identify the Current User and Environment
+Detects the user running the script (whoami) and resolves their home directory.
+Redirects all output to a log file at ~/update_log.txt.
+bash
+ROOT_USER=$(whoami)
+ROOT_HOME=$(eval echo "~$ROOT_USER")
+exec > >(tee -a "$LOG_FILE") 2>&1
+🔹 2. Define Key Paths and URLs
+Defines paths to:
+
+App directory (~/capunit)
+Version file (version.txt)
+Update JSON URL from GitHub
+Wayfire config path (~/.config/wayfire.ini)
+Example settings file (example.txt)
+🔹 3. Ensure jq Is Installed
+If jq is missing, it automatically installs it using apt-get.
+bash
+sudo apt-get update
+sudo apt-get install -y jq
+🔹 4. Create App Folder If Missing
+Ensures ~/capunit exists to store app files.
+
+🔹 5. Create example.txt with Default Settings
+If not already present, creates example.txt with basic JSON settings.
+
+🔹 6. Ensure Wayfire Configuration
+Ensures ~/.config/wayfire.ini exists.
+Appends [autostart] and [window-rules] for CapUnit if not already present:
+Auto-starts the app
+Launches it fullscreen, borderless, maximized, and always on top
+Places it on output HDMI-A-2
+🔹 7. Create .desktop Autostart File
+Ensures ~/.config/autostart/ exists.
+Creates capunit.desktop to auto-launch the app using the standard XDG method.
+Ensures it is executable.
+ini
+[Desktop Entry]
+Type=Application
+Exec=/home/pi/capunit/capunit
+...
+🔹 8. Fetch Latest Version Info from GitHub
+Downloads a remote JSON file with latest version info.
+Extracts:
+version: version number
+url: URL to download the .tar.gz archive
+🔹 9. Compare with Installed Version
+Compares version.txt with the latest version.
+If different, proceeds to update.
+🔹 10. Download and Install the Update
+Downloads the .tar.gz archive to /tmp/myapp.tar.gz
+Clears existing app files from ~/capunit
+Extracts new files into ~/capunit
+Updates version.txt
+🔹 11. Restart the App
+Checks if the app is already running and kills it.
+Restarts the app in the background using nohup.
+🔹 12. Final Output
+Displays success or "already up-to-date" message.
+Logs end time of update check.
+📦 Files/Directories Involved
+Path	Purpose
+~/capunit/	App install directory
+~/capunit/version.txt	Tracks installed version
+~/.config/wayfire.ini	Wayfire-specific autostart & window rules
+~/.config/autostart/capunit.desktop	XDG autostart desktop file
+~/update_log.txt	Log file for all output
+~/example.txt	Sample device/app metadata JSON
+✅ Summary
+This script ensures your Raspberry Pi system:
+
+Has jq installed
+Maintains the latest version of your CapUnit Flutter app
+Starts the app automatically after boot (both via Wayfire and .desktop)
+Keeps everything logged in a traceable manner
