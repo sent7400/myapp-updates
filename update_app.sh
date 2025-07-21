@@ -40,6 +40,39 @@ else
     echo "✅ jq is already installed."
 fi
 
+# Ensure libsqlite3-dev is installed
+if ! dpkg -s libsqlite3-dev &> /dev/null; then
+    echo "📦 'libsqlite3-dev' not found. Installing..."
+    sudo apt-get update
+    sudo apt-get install -y libsqlite3-dev
+
+    if ! dpkg -s libsqlite3-dev &> /dev/null; then
+        echo "❌ Error: Failed to install libsqlite3-dev. Please install it manually."
+        exit 1
+    else
+        echo "✅ libsqlite3-dev installed successfully."
+    fi
+else
+    echo "✅ libsqlite3-dev is already installed."
+fi
+
+# Ensure xterm is installed
+if ! command -v xterm &> /dev/null; then
+    echo "📦 'xterm' not found. Installing..."
+    sudo apt-get update
+    sudo apt-get install -y xterm
+
+    if ! command -v xterm &> /dev/null; then
+        echo "❌ Error: Failed to install xterm. Please install it manually."
+        exit 1
+    else
+        echo "✅ xterm installed successfully."
+    fi
+else
+    echo "✅ xterm is already installed."
+fi
+
+
 
 # Ensure the capunit directory exists
 if [ ! -d "$APP_DIR" ]; then
